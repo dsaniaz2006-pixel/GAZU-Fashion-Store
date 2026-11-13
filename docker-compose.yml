@@ -1,0 +1,150 @@
+# Phase 6: one public gateway; web and payment processing remain private.
+services:
+  mongo:
+    image: mongo:7.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks: [private]
+    healthcheck:
+      # This checks process availability; mongo-init separately verifies PRIMARY readiness.
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 15s
+
+  mongo-init:
+    image: mongo:7.0
+    restart: "no"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./docker/mongo/init-replica.sh:/scripts/init-replica.sh:ro
+    entrypoint: ["bash", "/scripts/init-replica.sh"]
+    networks: [private]
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    restart: unless-stopped
+    networks: [private]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: development # Enables the existing educational mock payment; not a public deployment preset.
+      PORT: "8000"
+      GAZU_DB_MODE: docker-local
+      MONGODB_URI: mongodb://mongo:27017/gazu_store?replicaSet=rs0
+      REDIS_URL: redis://redis:6379
+      CACHE_ENABLED: ${CACHE_ENABLED:-true}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-30}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      UPLOAD_DIR: /app/data/uploads
+      CLIENT_ORIGIN: http://localhost:${GAZU_WEB_PORT:-8080}
+      JWT_SECRET: ${JWT_SECRET:?Add a strong JWT_SECRET to your local root .env}
+      OTP_SECRET: ${OTP_SECRET:-}
+      ADMIN_NAME: ${ADMIN_NAME:-GAZU Admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ENABLE_MOCK_PAYMENTS: ${ENABLE_MOCK_PAYMENTS:-true}
+      RAZORPAY_KEY_ID: ${RAZORPAY_KEY_ID:-}
+      RAZORPAY_KEY_SECRET: ${RAZORPAY_KEY_SECRET:-}
+      # Phase 5 retains the existing in-API mock payment decision, not a Phase 6 service.
+      PAYMENT_SERVICE_URL: http://payment-service:4001
+      PAYMENT_SERVICE_SECRET: ${PAYMENT_SERVICE_SECRET:?Set PAYMENT_SERVICE_SECRET in root .env}
+      PAYMENT_TIMEOUT_MS: ${PAYMENT_TIMEOUT_MS:-5000}
+      EMAIL_SERVICE: ${EMAIL_SERVICE:-gmail}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+    volumes:
+      - uploads:/app/data/uploads
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    networks: [private]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 6s
+      retries: 10
+      start_period: 35s
+
+  payment-service:
+    build:
+      context: ./payment-service
+    restart: unless-stopped
+    init: true
+    environment:
+      NODE_ENV: development
+      PAYMENT_SERVICE_PORT: "4001"
+      PAYMENT_SERVICE_SECRET: ${PAYMENT_SERVICE_SECRET:?Set PAYMENT_SERVICE_SECRET in root .env}
+      PAYMENT_JOURNAL_PATH: /app/data/decisions.json
+    volumes:
+      - payment-journal:/app/data
+    networks: [private]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [private]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  gateway:
+    build:
+      context: ./gateway
+    restart: unless-stopped
+    ports:
+      - "${GAZU_WEB_PORT:-8080}:8080"
+    depends_on:
+      web:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    networks: [private]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+networks:
+  private:
+    driver: bridge
+volumes:
+  mongo-data:
+  uploads:
+  payment-journal:

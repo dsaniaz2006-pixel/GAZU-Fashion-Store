@@ -1,0 +1,23 @@
+import React,{useState,useEffect} from 'react';
+import {Link} from 'react-router-dom';
+import {Send,Trash2} from 'lucide-react';
+import {api} from '../../api.js';
+import {useAuth} from '../../context/AuthContext.jsx';
+import {ErrorState} from '../../components/AsyncState.jsx';
+import Wave2ProductCards from '../../components/wave2/Wave2ProductCards.jsx';
+import GazuEditorialArrival from '../../components/editorial/GazuEditorialArrival.jsx';
+import GazuEditNav from '../../components/editorial/GazuEditNav.jsx';
+import LanguageVoiceControls from '../../components/wave3/LanguageVoiceControls.jsx';
+export default function ShoppingAssistant(){
+ const {user}=useAuth();const [language,setLanguage]=useState('en');const [sessions,setSessions]=useState([]),[id,setId]=useState(''),[messages,setMessages]=useState([]),[prompt,setPrompt]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[matches,setMatches]=useState([]);
+ const loadSessions=async()=>{const result=await api('/wave2/conversations');setSessions(result.items||[]);};
+ useEffect(()=>{if(user)loadSessions().catch(e=>setError(e.message));},[user?.id]);
+ const open=async row=>{try{setError('');const res=await api(`/wave2/conversations/${row._id}`);setId(row._id);setMessages(res.messages||[]);setMatches([]);}catch(e){setError(e.message);}};
+ const send=async event=>{event.preventDefault();const q=prompt.trim();if(q.length<2||busy)return;setBusy(true);setError('');try{const res=await api('/wave2/chat',{method:'POST',body:{message:q,language,...(id?{conversationId:id}:{})}});setId(res.conversationId);setMessages(old=>[...old,{role:'user',text:q},{role:'assistant',text:res.message}].slice(-12));setMatches(res.products||[]);setPrompt('');await loadSessions();}catch(e){setError(e.message);}finally{setBusy(false);}};
+ const remove=async()=>{if(!id)return;try{await api(`/wave2/conversations/${id}`,{method:'DELETE'});setId('');setMessages([]);setMatches([]);await loadSessions();}catch(e){setError(e.message);}};
+ return <main className="gazu-editorial-page"><GazuEditorialArrival kicker="GAZU / PERSONAL CONCIERGE" title="ASK GAZU" description="A conversational edit based on real pieces, never invented stock." actionLabel="BEGIN A CONVERSATION" onAction={()=>document.getElementById('gazu-chat')?.scrollIntoView({behavior:'smooth'})}/><GazuEditNav/>
+ <section id="gazu-chat" className="gazu-editorial-content"><div className="gazu-editorial-section-top"><span>07 / THE CONVERSATION</span><span>REAL PRODUCTS. HUMAN STYLE.</span></div><h2>YOUR SHOPPING <em>ASSISTANT</em></h2><p className="gazu-wave2-muted">AI explanations may be imperfect. Prices, stock and products displayed in linked catalogue cards are authoritative; confirm on the product page.</p>
+ {!user?<p>Sign in to keep your conversations private. <Link to="/account">SIGN IN</Link></p>:<div className="gazu-wave2-chat-layout"><aside className="gazu-wave2-history"><h3>YOUR CONVERSATIONS</h3><button type="button" onClick={()=>{setId('');setMessages([]);setMatches([]);}}>+ NEW CONVERSATION</button>{sessions.map(s=><button type="button" key={s._id} aria-current={id===s._id?'true':undefined} onClick={()=>open(s)}>{s.title}</button>)}<small>Conversations are private to your account and expire after 30 days.</small></aside>
+ <div className="gazu-wave2-chat"><LanguageVoiceControls language={language} onLanguageChange={setLanguage} onTranscript={setPrompt} lastReply={[...messages].reverse().find(m=>m.role==='assistant')?.text||''}/><div className="gazu-wave2-transcript" aria-live="polite">{messages.length?messages.map((m,i)=><p key={i} className={`gazu-wave2-bubble ${m.role==='user'?'is-user':'is-ai'}`}><strong>{m.role==='user'?'YOU':'GAZU'}</strong>{m.text}</p>):<p className="gazu-wave2-muted">Try “Find a minimalist outfit for a weekend under ₹5000”. The assistant uses verified catalogue products.</p>}</div>{error&&<ErrorState message={error}/>}<form onSubmit={send} className="gazu-wave2-chat-form"><label htmlFor="gazu-chat-message">Your style question</label><textarea id="gazu-chat-message" rows={3} maxLength={700} value={prompt} onChange={e=>setPrompt(e.target.value)} placeholder="What should I wear for a casual evening?"/><div className="gazu-wave2-actions"><button disabled={busy||prompt.trim().length<2} type="submit">{busy?'ASKING...':'SEND'} <Send size={16}/></button>{id&&<button type="button" onClick={remove} className="gazu-wave2-quiet"><Trash2 size={15}/> DELETE CHAT</button>}</div></form></div></div>}
+ {matches.length>0&&<><h3>PIECES FROM YOUR LAST ANSWER</h3><Wave2ProductCards items={matches} prefix="AI MATCH"/></>}</section></main>;
+}

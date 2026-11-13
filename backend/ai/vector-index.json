@@ -1,0 +1,46 @@
+{
+  "name": "gazu_product_vector_v1",
+  "type": "vectorSearch",
+  "definition": {
+    "fields": [
+      {
+        "type": "vector",
+        "path": "aiEmbedding.values",
+        "numDimensions": 768,
+        "similarity": "cosine"
+      },
+      {
+        "type": "filter",
+        "path": "active"
+      },
+      {
+        "type": "filter",
+        "path": "publicationStatus"
+      },
+      {
+        "type": "filter",
+        "path": "category"
+      },
+      {
+        "type": "filter",
+        "path": "type"
+      },
+      {
+        "type": "filter",
+        "path": "pricePaise"
+      },
+      {
+        "type": "filter",
+        "path": "inStock"
+      },
+      {
+        "type": "filter",
+        "path": "quantity"
+      },
+      {
+        "type": "filter",
+        "path": "color"
+      }
+    ]
+  }
+}

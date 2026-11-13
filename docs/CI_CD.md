@@ -1,0 +1,5 @@
+# GitHub Actions CI (Phase 6)
+
+`.github/workflows/ci.yml` triggers on `main` push, `main` PR and manual dispatch. `source-checks` runs environment policy checks, payment HTTP tests, disposable Mongo replica-set backend tests, frontend tests and production build. `containers` builds the six application containers plus Mongo initializer, launches the stack on a disposable GitHub runner, and verifies gateway, private endpoint protection, mongo primary, Redis and payment service health. No deploy job, registry publish, or cloud credentials are used. `permissions: contents: read` restricts GITHUB_TOKEN. No real customer accounts, Atlas credentials or Gmail accounts are required. PRs should not receive deployment secrets. Never use `pull_request_target` to execute untrusted code with elevated credentials.
+
+The status of this workflow is **unverified on GitHub**; push to your repository and review actual workflow run results. If failures occur, address the underlying code or environment; do not mark tests passing without running them.

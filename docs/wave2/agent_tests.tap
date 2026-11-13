@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: agent1 unit: validates style, occasion, department and budget
+ok 1 - agent1 unit: validates style, occasion, department and budget
+  ---
+  duration_ms: 1.102402
+  type: 'test'
+  ...
+# Subtest: agent1 unit: preference changes the ranking based on evidence
+ok 2 - agent1 unit: preference changes the ranking based on evidence
+  ---
+  duration_ms: 0.830362
+  type: 'test'
+  ...
+# Subtest: agent1 integration: finds only in-stock and published Mongo-shaped products
+ok 3 - agent1 integration: finds only in-stock and published Mongo-shaped products
+  ---
+  duration_ms: 0.840567
+  type: 'test'
+  ...
+# Subtest: agent1 TDD regression: empty or unaffordable catalogue yields no fabricated items
+ok 4 - agent1 TDD regression: empty or unaffordable catalogue yields no fabricated items
+  ---
+  duration_ms: 0.280052
+  type: 'test'
+  ...
+# Subtest: agent1 TDD regression: result cannot mutate catalogue prices or products
+ok 5 - agent1 TDD regression: result cannot mutate catalogue prices or products
+  ---
+  duration_ms: 0.505281
+  type: 'test'
+  ...
+# Subtest: agent2 unit: maps garment types to exactly one slot
+ok 6 - agent2 unit: maps garment types to exactly one slot
+  ---
+  duration_ms: 1.228412
+  type: 'test'
+  ...
+# Subtest: agent2 unit: has a bounded and correct total price
+ok 7 - agent2 unit: has a bounded and correct total price
+  ---
+  duration_ms: 0.819526
+  type: 'test'
+  ...
+# Subtest: agent2 integration: outfit is real, unique and never contains draft or sold-out
+ok 8 - agent2 integration: outfit is real, unique and never contains draft or sold-out
+  ---
+  duration_ms: 0.379603
+  type: 'test'
+  ...
+# Subtest: agent2 TDD regression: sparse inventory explicitly lists missing slots
+ok 9 - agent2 TDD regression: sparse inventory explicitly lists missing slots
+  ---
+  duration_ms: 0.632834
+  type: 'test'
+  ...
+# Subtest: agent2 TDD regression: invalid and unavailable anchors are rejected
+ok 10 - agent2 TDD regression: invalid and unavailable anchors are rejected
+  ---
+  duration_ms: 0.363889
+  type: 'test'
+  ...
+# Subtest: agent2 TDD AI security: suggestions cannot add draft, duplicate or overbudget products
+ok 11 - agent2 TDD AI security: suggestions cannot add draft, duplicate or overbudget products
+  ---
+  duration_ms: 0.262456
+  type: 'test'
+  ...
+# Subtest: agent3 unit: validates bounded shopping messages
+ok 12 - agent3 unit: validates bounded shopping messages
+  ---
+  duration_ms: 1.149232
+  type: 'test'
+  ...
+# Subtest: agent3 unit: retains last ten bounded messages
+ok 13 - agent3 unit: retains last ten bounded messages
+  ---
+  duration_ms: 0.545583
+  type: 'test'
+  ...
+# Subtest: agent3 integration: grounding only exposes verified catalogue stock
+ok 14 - agent3 integration: grounding only exposes verified catalogue stock
+  ---
+  duration_ms: 0.558332
+  type: 'test'
+  ...
+# Subtest: agent3 TDD security: conversations are scoped to their owner
+ok 15 - agent3 TDD security: conversations are scoped to their owner
+  ---
+  duration_ms: 0.187012
+  type: 'test'
+  ...
+# Subtest: agent3 TDD regression: repeated turns never exceed twelve stored messages
+ok 16 - agent3 TDD regression: repeated turns never exceed twelve stored messages
+  ---
+  duration_ms: 1.129793
+  type: 'test'
+  ...
+# Subtest: agent4 unit: validates actual uploaded bytes, not only extension
+ok 17 - agent4 unit: validates actual uploaded bytes, not only extension
+  ---
+  duration_ms: 0.994229
+  type: 'test'
+  ...
+# Subtest: agent4 unit: rejects spoofed and oversize images
+ok 18 - agent4 unit: rejects spoofed and oversize images
+  ---
+  duration_ms: 1.392319
+  type: 'test'
+  ...
+# Subtest: agent4 integration: Gemini description is sanitized into bounded catalogue search
+ok 19 - agent4 integration: Gemini description is sanitized into bounded catalogue search
+  ---
+  duration_ms: 0.299702
+  type: 'test'
+  ...
+# Subtest: agent4 TDD security: malicious model output cannot pass untrusted instructions
+ok 20 - agent4 TDD security: malicious model output cannot pass untrusted instructions
+  ---
+  duration_ms: 0.39773
+  type: 'test'
+  ...
+# Subtest: agent4 TDD regression: unknown garment returns no fake item identity
+ok 21 - agent4 TDD regression: unknown garment returns no fake item identity
+  ---
+  duration_ms: 0.322356
+  type: 'test'
+  ...
+# Subtest: agent5 unit: recommends sellable pieces by style
+ok 22 - agent5 unit: recommends sellable pieces by style
+  ---
+  duration_ms: 1.14732
+  type: 'test'
+  ...
+# Subtest: agent5 integration: owned wishlist item is excluded and shapes the recommendation
+ok 23 - agent5 integration: owned wishlist item is excluded and shapes the recommendation
+  ---
+  duration_ms: 0.604872
+  type: 'test'
+  ...
+# Subtest: agent5 integration: department limits suggestions to real inventory
+ok 24 - agent5 integration: department limits suggestions to real inventory
+  ---
+  duration_ms: 0.153872
+  type: 'test'
+  ...
+# Subtest: agent5 TDD security: unavailable, draft and archived items never appear
+ok 25 - agent5 TDD security: unavailable, draft and archived items never appear
+  ---
+  duration_ms: 0.377179
+  type: 'test'
+  ...
+# Subtest: agent5 TDD regression: invalid input is not silently accepted
+ok 26 - agent5 TDD regression: invalid input is not silently accepted
+  ---
+  duration_ms: 0.228875
+  type: 'test'
+  ...
+# Subtest: agent5 TDD AI security: semantic suggestions are only ranking hints, not new inventory
+ok 27 - agent5 TDD AI security: semantic suggestions are only ranking hints, not new inventory
+  ---
+  duration_ms: 0.184368
+  type: 'test'
+  ...
+# Subtest: agent6 integration: all five Wave 2 APIs mount under the real Express app
+ok 28 - agent6 integration: all five Wave 2 APIs mount under the real Express app
+  ---
+  duration_ms: 1.667334
+  type: 'test'
+  ...
+# Subtest: agent6 integration: private personal data endpoints require authentication
+ok 29 - agent6 integration: private personal data endpoints require authentication
+  ---
+  duration_ms: 2.348651
+  type: 'test'
+  ...
+# Subtest: agent6 TDD safety: staging launcher refuses absent or wrong database URI
+ok 30 - agent6 TDD safety: staging launcher refuses absent or wrong database URI
+  ---
+  duration_ms: 62.615851
+  type: 'test'
+  ...
+# Subtest: agent6 integration: storefront routes render all five Phase 5–9 entry points
+ok 31 - agent6 integration: storefront routes render all five Phase 5–9 entry points
+  ---
+  duration_ms: 0.323117
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 201.97155

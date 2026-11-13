@@ -1,0 +1,4 @@
+import{test}from'node:test';import assert from'node:assert/strict';
+import{productEmbeddingText,vectorIndexDefinition,embeddingFingerprint}from'../../src/services/ai/embeddings.js';
+test('embedding input is stable and excludes PII and prices',()=>{const p={name:'Cotton Tee',description:'Daily classic',category:'Men',type:'T-Shirts',color:'White',styleTags:['minimal'],pricePaise:12300,quantity:2};const x=productEmbeddingText(p);assert.match(x,/Cotton Tee/);assert.doesNotMatch(x,/12300|quantity/);assert.equal(embeddingFingerprint(p),embeddingFingerprint({...p,pricePaise:99900}));});
+test('vector index definition includes searchable availability filters',()=>{const idx=vectorIndexDefinition(768);assert.ok(idx.fields.some(f=>f.type==='vector'&&f.numDimensions===768));assert.ok(idx.fields.some(f=>f.path==='category'&&f.type==='filter'));});

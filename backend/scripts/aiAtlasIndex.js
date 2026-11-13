@@ -1,0 +1,2 @@
+import '../src/config/env.js';import {checkEnvironment}from'../src/config/env.js';import{connectDatabase}from'../src/config/db.js';import{createAtlasIndex}from'../src/services/ai/embeddings.js';import mongoose from'mongoose';
+try {if(!process.argv.includes('--confirm'))throw Error('Run with --confirm only on a test Atlas database');checkEnvironment();await connectDatabase(process.env.MONGODB_URI);console.log(await createAtlasIndex({confirm:true}));}catch(e){console.error(e.message);process.exitCode=1;}finally{await mongoose.disconnect();}

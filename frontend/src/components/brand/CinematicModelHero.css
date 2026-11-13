@@ -1,0 +1,153 @@
+/* Phase 2 ONLY: one edge-to-edge three-model campaign following Phase 1. */
+.cinematic-model-hero {
+  position: relative;
+  isolation: isolate;
+  height: clamp(570px, 76svh, 900px);
+  min-height: 570px;
+  overflow: hidden;
+  background: #fff;
+  color: white;
+}
+.cinematic-model-strip {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 40fr 33fr 27fr;
+  z-index: -2;
+  overflow: hidden;
+  clip-path: inset(0% 0% 0% 0%);
+}
+.cinematic-model-panel {
+  min-width: 0;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #8e918a;
+  clip-path: inset(0% 0% 0% 0%);
+}
+.cinematic-women { background: #9eaba7; }
+.cinematic-men { background: #777d73; }
+.cinematic-kids { background: #8f9d9b; }
+.cinematic-model-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  backface-visibility: hidden;
+}
+/* A neutral panel is retained if an external source becomes unavailable. */
+.cinematic-model-image-fallback { background: linear-gradient(140deg,#9c9e99,#646b68); }
+.cinematic-model-hero.is-awaiting .cinematic-model-strip,
+.cinematic-model-hero.is-awaiting .cinematic-model-panel { clip-path: inset(100% 0% 0% 0%); }
+.cinematic-model-shading {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #00000030 0%, #00000003 26%, #00000018 45%, #00000060 100%);
+}
+.cinematic-model-topline, .cinematic-model-bottom {
+  position: absolute;
+  left: clamp(20px, 4vw, 64px);
+  right: clamp(20px, 4vw, 64px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 600 10px/1.5 "DM Sans", Arial, sans-serif;
+  letter-spacing: .17em;
+  gap: 20px;
+}
+.cinematic-model-topline { top: 27px; }
+.cinematic-model-bottom { bottom: 29px; font-size: 9px; }
+.cinematic-model-copy {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 82px 24px 90px;
+}
+.cinematic-model-title-window { overflow: hidden; width: 100%; }
+.cinematic-model-title {
+  margin: 0;
+  font: 400 clamp(54px, 7.2vw, 134px)/.92 var(--ns-serif, Georgia, serif);
+  letter-spacing: -.055em;
+  text-shadow: 0 2px 14px #00000017;
+  will-change: transform, opacity;
+}
+.cinematic-model-caption {
+  margin: 24px 0 22px;
+  font-size: clamp(12px, 1vw, 15px);
+  letter-spacing: .035em;
+}
+.cinematic-model-cta {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
+  min-height: 47px;
+  border: 1px solid #fff;
+  border-radius: 2px;
+  background: #fff;
+  color: #171717;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 12px 23px;
+  cursor: pointer;
+  transition: background-color .7s ease;
+}
+.cinematic-model-cta:hover { background: #e9e6e2; }
+.cinematic-model-cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+/* Fail-open if the GSAP chunk is unavailable: the finished hero must
+   never remain clipped, translucent, or unclickable. This activates only
+   when the first-visit reveal is no longer waiting/running. */
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-strip,
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-panel { clip-path: none !important; }
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-photo { transform: none !important; }
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-title,
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-caption,
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-cta,
+.cinematic-model-hero:not(.is-awaiting) .cinematic-model-topline {
+  opacity: 1 !important; transform: none !important;
+}
+.cinematic-model-hero.is-awaiting .cinematic-model-title { opacity: 0; transform: translateY(105%); }
+.cinematic-model-hero.is-awaiting .cinematic-model-caption,
+.cinematic-model-hero.is-awaiting .cinematic-model-cta,
+.cinematic-model-hero.is-awaiting .cinematic-model-topline { opacity: 0; }
+@media (max-width: 920px) {
+  .cinematic-model-hero { min-height: 560px; height: 75svh; }
+  .cinematic-model-strip { grid-template-columns: 39fr 32fr 29fr; }
+  .cinematic-model-title { font-size: clamp(54px, 9vw, 88px); }
+  .cinematic-model-photo { object-position: 50% 36%; }
+}
+@media (max-width: 600px) {
+  .cinematic-model-hero { height: 77svh; min-height: 530px; }
+  .cinematic-model-strip { grid-template-columns: 37fr 30fr 33fr; }
+  .cinematic-model-photo { object-position: 50% 32%; }
+  .cinematic-women .cinematic-model-photo { object-position: 56% 32% !important; }
+  .cinematic-men .cinematic-model-photo { object-position: 52% 33% !important; }
+  .cinematic-kids .cinematic-model-photo { object-position: 47% 34% !important; }
+  .cinematic-model-title { font-size: clamp(41px, 11vw, 67px); line-height: .97; letter-spacing: -.05em; }
+  .cinematic-model-copy { padding: 80px 12px 90px; }
+  .cinematic-model-topline, .cinematic-model-bottom { left: 16px; right: 16px; font-size: 7px; letter-spacing: .08em; }
+  .cinematic-model-topline { top: 21px; }
+  .cinematic-model-bottom { bottom: 18px; }
+  .cinematic-model-caption { font-size: 11px; margin: 15px 0 18px; }
+  .cinematic-model-cta { min-height: 43px; font-size: 10px; }
+}
+@media (max-width: 365px) {
+  .cinematic-model-bottom span:first-child { display: none; }
+  .cinematic-model-bottom { justify-content: center; }
+  .cinematic-model-title { font-size: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-model-hero.is-awaiting .cinematic-model-strip,
+  .cinematic-model-hero.is-awaiting .cinematic-model-panel { clip-path: none !important; }
+  .cinematic-model-hero.is-awaiting .cinematic-model-title { opacity: 1; transform: none; }
+  .cinematic-model-hero.is-awaiting .cinematic-model-caption,
+  .cinematic-model-hero.is-awaiting .cinematic-model-cta,
+  .cinematic-model-hero.is-awaiting .cinematic-model-topline { opacity: 1; }
+}

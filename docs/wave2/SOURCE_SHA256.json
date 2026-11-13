@@ -1,0 +1,10 @@
+{
+  "backend/src/routes/wave2.js": "a7caba628c78a8d6dfd9ff57cb42339d3dac250a50d53abd1fecb5e04c1ab445",
+  "backend/src/services/wave2/catalogue.js": "03afca4157579b1638a572669c06b79028385a08fc803ffa5a358fcf18d3a687",
+  "backend/src/services/wave2/conversation.js": "90e03005d724012b99725f432c14ff60b3068b411efeebc8576736a76d950b15",
+  "backend/src/services/wave2/outfits.js": "f6ba44841a85d8778915f3b8ce92194b757c8cef3c67298af0a616383c31059f",
+  "backend/src/services/wave2/recommendations.js": "fa7cfaa42c7027c2b297e2367f4cd48efd0f9bad54e26bbfa0a39b958a0c84ab",
+  "backend/src/services/wave2/stylist.js": "c8b9d9ead016e394c98110883b4c3d0954b0a470a46c5db2712dd5c7940c1ca9",
+  "backend/src/services/wave2/visual.js": "80e01495304ccd5d134db6ba07170f905013b589674a0b26654eeb72d9274ee6",
+  "scripts/launchWave2Staging.mjs": "05d85a3636c952a7c7a5ead4b219a4718d9b2fe8c7fb7fbe26339fd06ddbe002"
+}

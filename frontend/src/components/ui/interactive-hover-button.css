@@ -1,0 +1,29 @@
+.gazu-interactive-hover {
+  position:relative; isolation:isolate; overflow:hidden;
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:clamp(14px,2vw,25px); min-height:48px; padding:12px 22px;
+  border:1px solid #171715; border-radius:999px;
+  background:#171715; color:#f7f6f1;
+  font-family:inherit;font-size:11px;font-weight:600;line-height:1.2;letter-spacing:.085em;
+  text-transform:uppercase; cursor:pointer;
+  transition:color .7s ease,border-color .7s ease,transform .7s cubic-bezier(.22,1,.36,1);
+}
+.gazu-interactive-hover__wash {
+  position:absolute; inset:0; z-index:-1;
+  background:#f7f6f1;
+  transform:translateY(105%); border-radius:50% 50% 0 0;
+  transition:transform .7s cubic-bezier(.22,1,.36,1),border-radius .7s cubic-bezier(.22,1,.36,1);
+}
+.gazu-interactive-hover:hover .gazu-interactive-hover__wash,
+.gazu-interactive-hover:focus-visible .gazu-interactive-hover__wash {transform:translateY(0);border-radius:0}
+.gazu-interactive-hover:hover,.gazu-interactive-hover:focus-visible{color:#171715}
+.gazu-interactive-hover__text,.gazu-interactive-hover__arrow{position:relative;z-index:1}
+.gazu-interactive-hover__arrow{display:grid;place-items:center;transition:transform .7s cubic-bezier(.22,1,.36,1)}
+.gazu-interactive-hover:hover .gazu-interactive-hover__arrow,
+.gazu-interactive-hover:focus-visible .gazu-interactive-hover__arrow{transform:translate(3px,-3px)}
+.gazu-interactive-hover:focus-visible{outline:2px solid #171715;outline-offset:4px}
+.gazu-interactive-hover:disabled{opacity:.48;cursor:not-allowed}
+.gazu-interactive-hover:disabled .gazu-interactive-hover__wash{transform:translateY(105%)}
+@media(prefers-reduced-motion:reduce){
+ .gazu-interactive-hover,.gazu-interactive-hover__wash,.gazu-interactive-hover__arrow{transition:none!important}
+}

@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-11",
+  "runtime": "node 22.16.0",
+  "executed": {
+    "wave2_node_tests": {
+      "passed": 31,
+      "failed": 0,
+      "feature_agents": 27,
+      "integrator": 4
+    },
+    "legacy_liquid_nav": {
+      "passed": 10,
+      "failed": 0
+    },
+    "legacy_sitewide_liquid": {
+      "passed": 7,
+      "failed": 0
+    },
+    "legacy_phase_units": {
+      "passed": 14,
+      "failed": 0
+    }
+  },
+  "prepared_not_executed": [
+    "wave2_http_supertest",
+    "frontend_vitest",
+    "frontend_build",
+    "chromium_browser_e2e",
+    "live_gemini_mongodb_stage"
+  ],
+  "production_ready": false,
+  "original_db_modified": false
+}

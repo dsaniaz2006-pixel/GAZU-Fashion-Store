@@ -1,0 +1,98 @@
+/* Phase 3: the reference has a white editorial section, a compact centered
+   serif heading, a continuous right-moving strip, and no slider chrome. */
+.gazu-summer-section {
+  background: var(--gazu-warm-grey, #e5e4de);
+  color: #161616;
+  text-align: center;
+  padding: clamp(75px, 8vw, 120px) 0 clamp(85px, 8vw, 125px);
+  width: 100%;
+  overflow: hidden;
+}
+.gazu-summer-section h2 {
+  margin: 0 20px clamp(35px, 4.5vw, 66px);
+  font: 400 clamp(27px, 2.6vw, 42px)/1.15 var(--ns-serif, Georgia, serif);
+  letter-spacing: -.035em;
+  text-transform: uppercase;
+}
+.gazu-summer-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+  padding: 8px 0 12px;
+  touch-action: pan-y; /* retain native vertical page scrolling */
+}
+.gazu-summer-track {
+  display: flex;
+  width: max-content;
+  transform: translate3d(-33.333333%,0,0);
+  align-items: center;
+  will-change: transform;
+}
+.gazu-summer-sequence {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: clamp(10px, 1.15vw, 20px);
+  /* The end gap is also included in the measured loop distance. */
+  padding-right: clamp(10px, 1.15vw, 20px);
+}
+.gazu-summer-frame {
+  flex: none;
+  width: clamp(215px, 22vw, 370px);
+  aspect-ratio: 0.76;
+  margin: 0;
+  overflow: hidden;
+  background: #e9e6e1;
+  border-radius: 1px;
+  transform: rotate(var(--summer-tilt, 0deg));
+  backface-visibility: hidden;
+}
+.gazu-summer-frame > img,
+.gazu-summer-photo-fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+.gazu-summer-photo-fallback {
+  display: grid;
+  place-items: center;
+  color: #888078;
+  font: 400 32px/1 var(--ns-serif, Georgia, serif);
+  letter-spacing: -.08em;
+}
+.gazu-summer-cta {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  background: #fff;
+  color: #191919;
+  border: 1px solid #dedbd5;
+  margin-top: clamp(38px, 5vw, 66px);
+  padding: 13px 20px;
+  min-height: 44px;
+  font: 500 11px/1.2 "DM Sans", Arial, sans-serif;
+  letter-spacing: .065em;
+  border-radius: 3px;
+  transition: background-color .7s ease, color .7s ease;
+  cursor: pointer;
+}
+.gazu-summer-cta:hover { background: #191919; color: #fff; }
+.gazu-summer-cta:focus-visible { outline: 2px solid #181818; outline-offset: 4px; }
+@media (max-width: 900px) {
+  .gazu-summer-frame { width: clamp(235px, 32vw, 320px); }
+  .gazu-summer-section { padding-top: 76px; padding-bottom: 95px; }
+}
+@media (max-width: 600px) {
+  .gazu-summer-frame { width: 76vw; }
+  .gazu-summer-sequence { gap: 12px; padding-right: 12px; }
+  .gazu-summer-section h2 { font-size: 31px; margin-bottom: 35px; }
+  .gazu-summer-cta { margin-top: 42px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gazu-summer-track { will-change: auto; }
+  .gazu-summer-cta { transition: none; }
+}

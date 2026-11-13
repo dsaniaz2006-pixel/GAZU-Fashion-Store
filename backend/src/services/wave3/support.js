@@ -1,0 +1,15 @@
+// Agent 2: published storefront policy text, not an invented fulfilment guarantee.
+// The current website's Help page gives guidance, not an automated eligibility decision.
+export const SUPPORT_POLICIES=Object.freeze({delivery:'The GAZU Help page says standard delivery usually takes 3–7 business days, and orders above ₹999 ship free. This is general guidance, not an order-specific ETA.',returns:'The GAZU Help page says eligible unworn items can be returned within 15 days of delivery. Eligibility requires human review; this assistant cannot approve returns or issue refunds.',care:'Follow the garment care label. GAZU Help advises washing similar colours together and air-drying where possible. Product-specific care instructions must come from a verified label.'});
+export function classifySupportTicket(text='') {const t=String(text).toLowerCase();if(/return|refund|exchange|ਵਾਪਸ|वापस/.test(t))return 'return';if(/deliver|ship|track|parcel|package|order status/.test(t))return 'delivery';if(/damage|damaged|broken|quality|stitch|defect/.test(t))return 'product';if(/pay|charge|money|transaction/.test(t))return 'payment';return 'general';}
+export function publicOrderSummary(order){if(!order)return null;return {id:String(order._id||order.id||''),orderNumber:order.orderNumber||null,status:order.status||'placed',paymentStatus:order.paymentStatus||'pending',createdAt:order.createdAt||null,items:(order.items||[]).slice(0,20).map(x=>({name:String(x.name||''),size:String(x.size||''),quantity:x.quantity})),totalPaise:order.totalPaise||0};}
+export function supportExplanation(message,order=null){
+ const category=classifySupportTicket(message);let answer='',needsHuman=false;
+ const status={placed:'The order is recorded as placed.',preparing:'The order is preparing for dispatch.',out_for_delivery:'The order status is out for delivery.',delivered:'The order is marked delivered.'};
+ if(category==='delivery'){answer=order?`${status[order.status]||'The order status is not available.'} ${SUPPORT_POLICIES.delivery} The database does not include a confirmed delivery appointment.`:'Please select one of your orders to view its recorded status. '+SUPPORT_POLICIES.delivery;}
+ else if(category==='return'){answer=`${SUPPORT_POLICIES.returns} Please submit a support request for a staff review.`;needsHuman=true;}
+ else if(category==='product'){answer=`${SUPPORT_POLICIES.care} For a product defect or damage, submit a support request with the details.`;needsHuman=true;}
+ else if(category==='payment'){answer='Payment-related concerns need a human support agent. Do not share card numbers, OTPs or passwords.';needsHuman=true;}
+ else {answer=order?`${status[order.status]||'Status is not available.'} Ask about delivery, returns or product care, or create a support ticket.`:'I can explain published delivery, return and care guidance, or help draft a support ticket. Select an order for its actual recorded status.';}
+ return {category,answer,needsHuman,order:publicOrderSummary(order),disclaimer:'Guidance only. No return, refund, delivery promise or order change was made.'};
+}

@@ -1,0 +1,24 @@
+/* Wave 2: editorial-neutral additions, no changes to existing GAZU liquid UI */
+.gazu-wave2-form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:1rem;margin:1.5rem 0 2rem;padding:1.25rem;border:1px solid #c7c3bc;background:#f3f0eb}
+.gazu-wave2-form label{display:flex;flex-direction:column;gap:.55rem;min-width:160px;flex:1;font-size:.77rem;letter-spacing:.06em;font-weight:600}
+.gazu-wave2-form select,.gazu-wave2-form input,.gazu-wave2-chat textarea{font:inherit;padding:.75rem;background:#fff;border:1px solid #bab3a7;color:#25221f;max-width:100%}
+.gazu-wave2-form button,.gazu-wave2-chat-form button,.gazu-wave2-history button{display:inline-flex;align-items:center;gap:.5rem;justify-content:center;cursor:pointer;background:#2a2624;color:#f9f5ef;border:1px solid #2a2624;padding:.78rem 1rem;letter-spacing:.06em;font-size:.75rem}
+.gazu-wave2-form button:disabled,.gazu-wave2-chat-form button:disabled{opacity:.55;cursor:not-allowed}
+.gazu-wave2-muted{color:#70695f;font-size:.94rem;line-height:1.65;margin:1.2rem 0}
+.gazu-wave2-results{margin:1.5rem 0 3rem}
+.gazu-wave2-chat-layout{display:grid;grid-template-columns:minmax(180px,240px) 1fr;gap:1.5rem;margin:2rem 0}
+.gazu-wave2-history{display:flex;flex-direction:column;gap:.6rem;min-width:0}
+.gazu-wave2-history button{background:transparent;color:#292522;text-align:left;justify-content:flex-start;letter-spacing:0;overflow-wrap:anywhere}
+.gazu-wave2-history button[aria-current=true]{background:#2a2624;color:#fff}
+.gazu-wave2-history small{font-size:.74rem;color:#726a60;line-height:1.5}
+.gazu-wave2-chat{border:1px solid #c7c3bc;padding:1.2rem;min-width:0}
+.gazu-wave2-transcript{height:360px;max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:.7rem;margin-bottom:1rem}
+.gazu-wave2-bubble{display:flex;flex-direction:column;gap:.5rem;max-width:85%;background:#eeebe5;padding:.85rem 1rem;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55}
+.gazu-wave2-bubble strong{font-size:.7rem;letter-spacing:.1em}
+.gazu-wave2-bubble.is-user{align-self:flex-end;background:#302c28;color:white}
+.gazu-wave2-bubble.is-ai{align-self:flex-start}
+.gazu-wave2-chat-form{display:flex;flex-direction:column;gap:.55rem}
+.gazu-wave2-chat-form label{font-size:.8rem;font-weight:600}
+.gazu-wave2-actions{display:flex;flex-wrap:wrap;gap:.6rem}
+.gazu-wave2-chat-form button.gazu-wave2-quiet{background:transparent;color:#302c28}
+@media(max-width:700px){.gazu-wave2-chat-layout{grid-template-columns:1fr}.gazu-wave2-history{max-height:160px;overflow:auto}.gazu-wave2-form{flex-direction:column;align-items:stretch}.gazu-wave2-form label{min-width:0;width:100%}}

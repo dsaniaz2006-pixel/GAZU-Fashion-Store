@@ -1,0 +1,5 @@
+services:
+  api:
+    environment:
+      GAZU_DB_MODE: atlas
+      MONGODB_URI: ${MONGODB_URI:?Set your Atlas URI in root .env}

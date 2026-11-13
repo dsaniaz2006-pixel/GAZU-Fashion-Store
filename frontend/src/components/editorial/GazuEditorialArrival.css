@@ -1,0 +1,17 @@
+.gazu-arrival{position:relative;display:grid;isolation:isolate;min-height:clamp(430px,58svh,660px);overflow:hidden;background:#424740;color:#fff;margin:0}
+.gazu-arrival-strip{position:absolute;inset:0;z-index:-2;display:grid;grid-template-columns:40fr 33fr 27fr;overflow:hidden}
+.gazu-arrival-panel{position:relative;min-width:0;overflow:hidden;background:#82857e}
+.gazu-arrival-women{background:#a4a9a2}.gazu-arrival-men{background:#777e72}.gazu-arrival-kids{background:#8e9995}
+.gazu-arrival-photo{width:100%;height:100%;object-fit:cover;display:block;will-change:transform}
+.gazu-arrival-image-fallback{display:grid;place-items:center;width:100%;height:100%;font:400 3rem/1 var(--ns-serif,Georgia,serif);color:#ddd}
+.gazu-arrival-shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#12110f75,#14141428 30%,#111a1885)}
+.gazu-arrival-copy{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:inherit;max-width:960px;margin:auto;padding:78px 22px 95px;text-align:center}
+.gazu-arrival-kicker,.gazu-arrival-bottom{font:600 10px/1.6 'DM Sans',Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.gazu-arrival-kicker{margin:0 0 16px}
+.gazu-arrival h1{font:400 clamp(48px,7.1vw,112px)/.94 var(--ns-serif,Georgia,serif);letter-spacing:-.055em;margin:0;text-transform:uppercase;text-wrap:balance}
+.gazu-arrival-description{max-width:560px;margin:20px auto 0;font:400 clamp(12px,1.12vw,16px)/1.7 'DM Sans',Arial,sans-serif}
+.gazu-arrival-cta{display:inline-flex;align-items:center;gap:12px;justify-content:center;margin-top:25px;background:#f1f0ec;color:#161616;border:1px solid #f1f0ec;border-radius:2px;padding:13px 19px;font-size:10px;font-weight:600;letter-spacing:.08em;cursor:pointer;transition:background .7s ease,transform .7s ease}
+.gazu-arrival-cta:hover{background:#dcd9d3;transform:translateY(-2px)}.gazu-arrival-cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.gazu-arrival-bottom{display:flex;position:absolute;bottom:18px;left:clamp(20px,4vw,60px);right:clamp(20px,4vw,60px);justify-content:space-between;gap:12px;font-size:9px}
+@media(max-width:700px){.gazu-arrival{min-height:500px}.gazu-arrival-strip{grid-template-columns:37fr 30fr 33fr}.gazu-arrival-copy{padding:68px 16px 82px}.gazu-arrival h1{font-size:clamp(40px,11vw,69px)}.gazu-arrival-bottom{font-size:7px;left:14px;right:14px}}
+@media(prefers-reduced-motion:reduce){.gazu-arrival-photo{will-change:auto}.gazu-arrival-cta{transition:none}}

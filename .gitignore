@@ -1,0 +1,21 @@
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+data/
+coverage/
+.DS_Store
+*.log
+
+**/.env
+**/.env.*
+!**/.env.example
+
+payment-service/data/
+
+# Never commit local TLS private keys, certificates or CA files.
+certs/
+*.pem
+*.key
+*.p12

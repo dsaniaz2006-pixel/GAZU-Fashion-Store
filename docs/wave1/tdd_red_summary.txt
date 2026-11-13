@@ -1,0 +1,1 @@
+TDD red stage: node --test tests/wave1/*.test.js returned exit 1. Four initial test files failed to import missing modules: catalogueAudit.js, modelProvider.js, embeddings.js, smartSearch.js. These were implemented; initial 8 tests then passed. Full local logs can be shared if needed.
