@@ -40,7 +40,7 @@ try {
         cert: readFileSync(process.env.GAZU_TLS_CERT_FILE),
       }, app)
     : app;
-  server.listen(port, "127.0.0.1", () =>
+  server.listen(port, "0.0.0.0", () =>
     logger.info("GAZU API ready", { port, protocol: useHttps ? "https" : "http" }),
   );
   const shutdown = async () => {
