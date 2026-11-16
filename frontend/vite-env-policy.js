@@ -8,5 +8,19 @@ export function findUnexpectedPublicEnvKeys(publicEnv, environment = process.env
     ...Object.keys(publicEnv),
     ...Object.keys(environment).filter((key) => key.startsWith("VITE_")),
   ]);
-  return [...names].filter((key) => !approved.has(key) && !viteInternals.has(key));
+
+return [...names].filter((key) => {
+  if (approved.has(key) || viteInternals.has(key)) {
+    return false;
+  }
+
+  // Permit Vercel's framework metadata during cloud builds.
+  // The Vite envPrefix still limits which variables enter the bundle.
+  if (environment.VERCEL === "1" && key.startsWith("VITE_VERCEL_")) {
+    return false;
+  }
+
+  return true;
+});
+
 }
