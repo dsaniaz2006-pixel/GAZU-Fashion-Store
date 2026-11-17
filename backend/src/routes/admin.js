@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import Order from '../models/Order.js';
+import {sendOrderStatusUpdate} from '../services/orderNotifications.js';
 import InventoryEvent from '../models/InventoryEvent.js';
 import StoreEvent from '../models/StoreEvent.js';
 import {cacheStatus} from '../services/cache.js';
@@ -81,6 +82,13 @@ router.patch('/orders/:id/status',fulfil,validateId,validate(z.object({status:z.
     if(claim)await User.updateOne({_id:claim.inviter},{$inc:{loyaltyPoints:50}},{session});}
   }
  });
+ // The transaction must commit before external email is sent.
+ // A notification failure must not undo a successful order-status update.
+ try {
+  await sendOrderStatusUpdate(order);
+ } catch (error) {
+  console.warn('GAZU order status notification failed:', error.name);
+ }
  res.json(order);
 });
 router.get('/staff',requireAdmin,async(req,res)=>res.json(await User.find({role:{$ne:'customer'}}).select('name email role disabled').sort({name:1})));

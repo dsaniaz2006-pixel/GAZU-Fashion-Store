@@ -162,3 +162,98 @@ export async function sendOrderConfirmation(order) {
     }
   }
 }
+
+// One status update email per order stage. This is a status notification,
+// not a live courier location or a fabricated tracking number.
+const orderStatusMessages = {
+  preparing: {
+    subject: "GAZU - We're Preparing Your Order",
+    label: "Preparing",
+    message: "Our team is preparing your order.",
+    next: "We'll let you know when it is out for delivery.",
+  },
+  out_for_delivery: {
+    subject: "GAZU - Your Order Is Out for Delivery",
+    label: "Out for delivery",
+    message: "Your order has been marked out for delivery.",
+    next: "Please keep an eye out for the delivery. You can also check My Orders in GAZU.",
+  },
+  delivered: {
+    subject: "GAZU - Your Order Has Been Delivered",
+    label: "Delivered",
+    message: "Your order has been marked as delivered.",
+    next: "If you have not received your parcel, please contact GAZU support.",
+  },
+};
+
+export async function sendOrderStatusUpdate(order) {
+  const content = orderStatusMessages[order?.status];
+  if (!content || !order?._id) return false;
+
+  const user = await User.findById(order.user).select("name email");
+  if (!user?.email) {
+    console.warn("GAZU order status email skipped: customer email unavailable");
+    return false;
+  }
+
+  const type = `status_${order.status}`;
+  // Unique (order, type) index prevents duplicates across multiple API instances
+  // and avoids a new message when a request is replayed.
+  try {
+    const claim = await OrderNotification.updateOne(
+      { order: order._id, type },
+      {
+        $setOnInsert: {
+          order: order._id,
+          type,
+          recipient: user.email,
+          status: "sending",
+        },
+      },
+      { upsert: true },
+    );
+    if (claim.upsertedCount !== 1) return false;
+  } catch (error) {
+    if (error.code === 11000) return false;
+    throw error;
+  }
+
+  const orderNumber = order.orderNumber || String(order._id);
+  const body = [
+    `Hi ${user.name || "Customer"},`,
+    "",
+    content.message,
+    "",
+    `Order number: ${orderNumber}`,
+    `Current status: ${content.label}`,
+    "",
+    content.next,
+    "",
+    "To review your order, sign in to GAZU Fashion Store and open My Orders.",
+    "",
+    "Thank you for shopping with GAZU!",
+    "GAZU Fashion Store",
+  ].join("\n");
+
+  try {
+    await sendEmail(user.email, content.subject, body);
+    await OrderNotification.updateOne(
+      { order: order._id, type, status: "sending" },
+      {
+        $set: { status: "sent", sentAt: new Date() },
+        $unset: { error: "" },
+      },
+    );
+    console.info(`GAZU order status email submitted for ${orderNumber} (${order.status})`);
+    return true;
+  } catch (error) {
+    // Do not auto-retry a possibly delivered message; email providers can time out
+    // after accepting an email, so repeating it risks duplicate customer emails.
+    await OrderNotification.updateOne(
+      { order: order._id, type, status: "sending" },
+      { $set: { status: "failed", error: "Email submission could not be confirmed" } },
+    ).catch(() => {});
+    console.warn(`GAZU order status email unavailable (${order.status}): ${error.name}`);
+    return false;
+  }
+}

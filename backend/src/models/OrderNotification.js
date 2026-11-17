@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const schema = new mongoose.Schema(
   {
     order: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
-    type: { type: String, enum: ["order_confirmation"], required: true },
+    type: { type: String, enum: ["order_confirmation", "status_preparing", "status_out_for_delivery", "status_delivered"], required: true },
     recipient: { type: String, required: true },
     status: { type: String, enum: ["sending", "sent", "failed"], default: "sending" },
     sentAt: Date,
