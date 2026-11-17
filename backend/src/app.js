@@ -21,6 +21,9 @@ import { isAllowedBrowserOrigin } from "./config/allowedOrigins.js";
 import { healthHandler } from "./http/health.js";
 import { identifyApi, apiNotFound } from "./http/responses.js";
 const app = express();
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 app.use(requestId, requestLogger);
 // Identify the correct API process when other local projects also use port 8000.
 app.use(identifyApi);
