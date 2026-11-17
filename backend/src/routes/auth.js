@@ -1,6 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { authSession, publicUser } from "../services/authSession.js";
+import { sendWelcomeEmail } from "../services/welcomeEmail.js";
 import {
   beginGoogle,
   consumeGoogle,
@@ -78,6 +79,7 @@ router.post(
       email,
       passwordHash: await bcrypt.hash(password, 12),
       role: "customer",
+      welcomeEmailPending: true,
     });
     await issueOtp(email);
     res.status(201).json({
@@ -106,6 +108,7 @@ router.post("/login", limiter, validate(credentials), async (req, res) => {
       "Verify your email before signing in.",
       { requiresVerification: true, email: user.email },
     );
+  await sendWelcomeEmail(user);
   res.json(authSession(user));
 });
 router.post(
@@ -114,6 +117,7 @@ router.post(
   validate(emailSchema.extend({ otp: z.string().regex(/^[0-9]{6}$/) })),
   async (req, res) => {
     const user = await verifyOtp(req.body.email, req.body.otp);
+    await sendWelcomeEmail(user);
     res.json({ message: "Email verified.", ...authSession(user) });
   },
 );
@@ -169,6 +173,7 @@ router.post(
         googleSub: identity.sub,
         role: "customer",
         emailVerified: false,
+        welcomeEmailPending: true,
       });
       created = true;
     }
@@ -193,6 +198,7 @@ router.post(
         });
       return;
     }
+    await sendWelcomeEmail(user);
     res.json(authSession(user));
   },
 );

@@ -44,7 +44,7 @@ test('first Google registration has no session/password until own OTP, then retu
  await request(app).get('/api/cart').set('Authorization',`Bearer ${bearer(user)}`).expect(403);
  const verified=await request(app).post('/api/auth/verify-email').send({email,otp:otp()}).expect(200);assert.ok(verified.body.token);
  await request(app).get('/api/auth/me').set('Authorization',`Bearer ${verified.body.token}`).expect(200);
- const returning=await google();const signed=await returning.post().expect(200);assert.equal(signed.body.user.id,user.id);assert.ok(signed.body.token);assert.equal(mails.length,1);
+ const returning=await google();const signed=await returning.post().expect(200);assert.equal(signed.body.user.id,user.id);assert.ok(signed.body.token);assert.equal(mails.filter(m=>m.subject.includes("Welcome to GAZU")).length,1);
  await login().expect(401);await first.post().expect(401);
 });
 test('pending Google re-entry resumes without duplicate account or automatic resend',async()=>{

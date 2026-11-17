@@ -46,7 +46,7 @@ const register = () =>
     .send({ name: "Customer", email, password });
 const login = () =>
   request(app).post("/api/auth/login").send({ email, password });
-const code = () => mails.at(-1).text.match(/code is: (\d{6})/)[1];
+const code = () => mails.findLast(m => m.subject.includes("Verify")).text.match(/code is: (\d{6})/)[1];
 const verify = (otp) =>
   request(app).post("/api/auth/verify-email").send({ email, otp });
 const unlock = () =>
@@ -74,10 +74,12 @@ test("register sends six digits but returns no token; verify once then sign in",
   assert.match(mails[0].subject, /GAZU/);
   await login().expect(403);
   await verify(code()).expect(200);
+  assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 1);
   assert.equal((await User.findOne({ email })).emailVerified, true);
   assert.equal(await EmailOtp.countDocuments(), 0);
   await verify(code()).expect(400);
   assert.ok((await login().expect(200)).body.token);
+  assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 1);
 });
 test("unverified existing JWT is denied while legacy admin remains accessible", async () => {
   const customer = await pending();

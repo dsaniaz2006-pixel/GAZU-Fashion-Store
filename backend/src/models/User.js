@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
     recoverySendCount: { type: Number, default: 0 },
     role: { type: String, enum: ["customer", "admin", "inventory_manager", "order_manager", "support_agent", "marketing_manager"], default: "customer" },
     emailVerified: { type: Boolean, default: false },
+    // Only newly registered customers are eligible for one welcome email.
+    welcomeEmailPending: { type: Boolean, default: false },
+    welcomeEmailSendingAt: Date,
+    welcomeEmailSentAt: Date,
     verificationLastSentAt: Date,
     verificationWindowAt: Date,
     verificationSendCount: { type: Number, default: 0 },
