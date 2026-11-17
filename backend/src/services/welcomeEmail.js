@@ -1,61 +1,73 @@
 import User from "../models/User.js";
 import { sendEmail } from "./emailService.js";
 
-// Claim each welcome message atomically to avoid duplicates across logins.
-// Only newly registered, verified customer accounts are eligible.
+// Called ONLY after a new customer's email OTP is successfully verified.
+// Atomically claim the one allowed attempt BEFORE sending to prevent duplicates
+// from concurrent requests, repeat logins and ambiguous provider timeouts.
 export async function sendWelcomeEmail(user) {
   if (!user || user.role !== "customer" || !user.emailVerified) return false;
-  const claimedAt = new Date();
+
+  let claimed;
   try {
-    const claimed = await User.findOneAndUpdate(
+    claimed = await User.findOneAndUpdate(
       {
         _id: user._id,
+        role: "customer",
         emailVerified: true,
         disabled: { $ne: true },
         welcomeEmailPending: true,
+        welcomeEmailAttemptedAt: { $exists: false },
         welcomeEmailSentAt: { $exists: false },
-        $or: [
-          { welcomeEmailSendingAt: { $exists: false } },
-          { welcomeEmailSendingAt: { $lt: new Date(Date.now() - 10 * 60 * 1000) } },
-        ],
       },
-      { $set: { welcomeEmailSendingAt: claimedAt } },
+      {
+        $set: {
+          welcomeEmailPending: false,
+          welcomeEmailAttemptedAt: new Date(),
+        },
+        $unset: { welcomeEmailSendingAt: "" },
+      },
       { new: true },
     );
-    if (!claimed) return false;
-
-    try {
-      await sendEmail(
-        claimed.email,
-        "GAZU - Welcome to GAZU Fashion Store!",
-        [
-          `Hi ${claimed.name || "Customer"},`,
-          "",
-          "Welcome to GAZU Fashion Store!",
-          "Your account is verified and ready to shop.",
-          "Discover our latest collections and enjoy your GAZU experience.",
-          "",
-          "Thank you for joining us!",
-          "GAZU Fashion Store",
-        ].join("\n"),
-      );
-      await User.updateOne(
-        { _id: claimed._id, welcomeEmailSendingAt: claimedAt },
-        { $set: { welcomeEmailSentAt: new Date(), welcomeEmailPending: false },
-          $unset: { welcomeEmailSendingAt: "" } },
-      );
-      return true;
-    } catch (error) {
-      // Email delivery is optional: don't block verified sign-in.
-      await User.updateOne(
-        { _id: claimed._id, welcomeEmailSendingAt: claimedAt },
-        { $unset: { welcomeEmailSendingAt: "" } },
-      ).catch(() => {});
-      console.warn("GAZU welcome email unavailable:", error.name);
-      return false;
-    }
   } catch (error) {
-    console.warn("GAZU welcome email could not be claimed:", error.name);
+    // A welcome email is never required for a user to finish verification.
+    console.warn("GAZU welcome claim failed:", error.name);
+    return false;
+  }
+
+  if (!claimed) return false;
+
+  try {
+    await sendEmail(
+      claimed.email,
+      "GAZU - Welcome to GAZU Fashion Store!",
+      [
+        `Hi ${claimed.name || "Customer"},`,
+        "",
+        "Welcome to GAZU Fashion Store!",
+        "Your account is verified and ready to shop.",
+        "Discover our latest collections and enjoy your GAZU experience.",
+        "",
+        "Thank you for joining us!",
+        "GAZU Fashion Store",
+      ].join("\n"),
+    );
+
+    await User.updateOne(
+      { _id: claimed._id },
+      {
+        $set: { welcomeEmailSentAt: new Date() },
+        $unset: { welcomeEmailFailedAt: "" },
+      },
+    );
+    return true;
+  } catch (error) {
+    // Never re-trigger on a later login. Provider acknowledgement is ambiguous
+    // on a timeout: automatically retrying could send duplicate welcome emails.
+    await User.updateOne(
+      { _id: claimed._id },
+      { $set: { welcomeEmailFailedAt: new Date() } },
+    ).catch(() => {});
+    console.warn("GAZU welcome email not confirmed:", error.name);
     return false;
   }
 }

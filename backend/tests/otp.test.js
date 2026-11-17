@@ -79,7 +79,12 @@ test("register sends six digits but returns no token; verify once then sign in",
   assert.equal(await EmailOtp.countDocuments(), 0);
   await verify(code()).expect(400);
   assert.ok((await login().expect(200)).body.token);
+  assert.ok((await login().expect(200)).body.token);
   assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 1);
+  const saved = await User.findOne({ email });
+  assert.ok(saved.welcomeEmailAttemptedAt);
+  assert.ok(saved.welcomeEmailSentAt);
+  assert.equal(saved.welcomeEmailPending, false);
 });
 test("unverified existing JWT is denied while legacy admin remains accessible", async () => {
   const customer = await pending();
@@ -214,4 +219,39 @@ test("resend cooldown has Retry-After and malformed OTP is rejected", async () =
     .post("/api/auth/register")
     .send({ name: "Customer", email, password, emailVerified: true })
     .expect(400);
+});
+
+
+test("welcome email is never retried on login after an unsuccessful send", async () => {
+  await register().expect(201);
+  const otp = code();
+  deliveryFails = true;
+  await verify(otp).expect(200);
+  const verified = await User.findOne({ email });
+  assert.equal(verified.emailVerified, true);
+  assert.equal(verified.welcomeEmailPending, false);
+  assert.ok(verified.welcomeEmailAttemptedAt);
+  assert.ok(verified.welcomeEmailFailedAt);
+  assert.equal(verified.welcomeEmailSentAt, undefined);
+  deliveryFails = false;
+  await login().expect(200);
+  await login().expect(200);
+  assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 0);
+  await verify(otp).expect(400);
+});
+
+test("logging in to an already-verified account never triggers welcome", async () => {
+  await User.create({
+    name: "Previously Verified",
+    email,
+    passwordHash: await bcrypt.hash(password, 4),
+    emailVerified: true,
+    welcomeEmailPending: true,
+  });
+  await login().expect(200);
+  await login().expect(200);
+  assert.equal(mails.length, 0);
+  const saved = await User.findOne({ email });
+  assert.equal(saved.welcomeEmailPending, true);
+  assert.equal(saved.welcomeEmailAttemptedAt, undefined);
 });

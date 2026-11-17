@@ -108,7 +108,6 @@ router.post("/login", limiter, validate(credentials), async (req, res) => {
       "Verify your email before signing in.",
       { requiresVerification: true, email: user.email },
     );
-  await sendWelcomeEmail(user);
   res.json(authSession(user));
 });
 router.post(
@@ -198,7 +197,6 @@ router.post(
         });
       return;
     }
-    await sendWelcomeEmail(user);
     res.json(authSession(user));
   },
 );

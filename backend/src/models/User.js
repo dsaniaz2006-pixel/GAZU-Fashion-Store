@@ -35,8 +35,9 @@ const userSchema = new mongoose.Schema(
     emailVerified: { type: Boolean, default: false },
     // Only newly registered customers are eligible for one welcome email.
     welcomeEmailPending: { type: Boolean, default: false },
-    welcomeEmailSendingAt: Date,
+    welcomeEmailAttemptedAt: Date,
     welcomeEmailSentAt: Date,
+    welcomeEmailFailedAt: Date,
     verificationLastSentAt: Date,
     verificationWindowAt: Date,
     verificationSendCount: { type: Number, default: 0 },
