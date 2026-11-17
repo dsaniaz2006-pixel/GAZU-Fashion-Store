@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import { sendEmail } from "./emailService.js";
+import { welcomeEmailHtml } from "./emailTemplates.js";
 
 // Called ONLY after a new customer's email OTP is successfully verified.
 // Atomically claim the one allowed attempt BEFORE sending to prevent duplicates
@@ -50,6 +51,7 @@ export async function sendWelcomeEmail(user) {
         "Thank you for joining us!",
         "GAZU Fashion Store",
       ].join("\n"),
+      welcomeEmailHtml({ name: claimed.name }),
     );
 
     await User.updateOne(

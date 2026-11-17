@@ -2,6 +2,7 @@
 import User from "../models/User.js";
 import OrderNotification from "../models/OrderNotification.js";
 import { sendEmail } from "./emailService.js";
+import { orderConfirmationHtml, orderStatusHtml } from "./emailTemplates.js";
 
 // Convert paise to Indian Rupees.
 const money = (paise) =>
@@ -114,7 +115,8 @@ export async function sendOrderConfirmation(order) {
     await sendEmail(
       user.email,
       "GAZU - Your Order Has Been Confirmed",
-      content
+      content,
+      orderConfirmationHtml({ order, customerName: user.name }),
     );
 
     await OrderNotification.updateOne(
@@ -236,7 +238,9 @@ export async function sendOrderStatusUpdate(order) {
   ].join("\n");
 
   try {
-    await sendEmail(user.email, content.subject, body);
+    await sendEmail(user.email, content.subject, body, orderStatusHtml({
+      order, customerName: user.name, status: order.status, description: content.message, next: content.next,
+    }));
     await OrderNotification.updateOne(
       { order: order._id, type, status: "sending" },
       {

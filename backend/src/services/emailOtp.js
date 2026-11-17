@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import User from "../models/User.js";
 import EmailOtp from "../models/EmailOtp.js";
 import { sendEmail } from "./emailService.js";
+import { otpEmailHtml } from "./emailTemplates.js";
 import { AppError } from "../utils/errors.js";
 export function verificationError(status, code, message, extra = {}) {
   const error = new AppError(status, message);
@@ -73,6 +74,7 @@ export async function issueOtp(email, deliver = sendEmail) {
       email,
       "GAZU Fashion Store - Verify Your Email",
       `Welcome to GAZU Fashion Store!\n\nYour verification code is: ${otp}\n\nThis code expires in 5 minutes. Never share it.\nIf you did not create an account, ignore this email.`,
+      otpEmailHtml(otp),
     );
   } catch {
     // Keep the pending account and cooldown. SMTP failures can be ambiguous;

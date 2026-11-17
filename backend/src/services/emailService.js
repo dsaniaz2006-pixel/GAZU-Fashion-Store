@@ -305,7 +305,7 @@ async function sendWithGmailApi(to, subject, text, html) {
 }
 
 // Google Apps Script — NEW HTTPS email provider
-async function sendWithAppsScript(to, subject, text) {
+async function sendWithAppsScript(to, subject, text, html) {
   const deploymentUrl =
     process.env.GAZU_APPS_SCRIPT_URL?.trim();
 
@@ -364,6 +364,7 @@ async function sendWithAppsScript(to, subject, text) {
         to: recipient,
         subject: emailSubject,
         text: String(text),
+        ...(html ? { html: String(html) } : {}),
       }),
       redirect: "follow",
       signal: AbortSignal.timeout(20000),
@@ -403,14 +404,14 @@ async function sendWithAppsScript(to, subject, text) {
 }
 
 // Shared function for OTP and order confirmations
-export async function sendEmail(to, subject, text) {
+export async function sendEmail(to, subject, text, htmlOverride = null) {
   if (!to || !subject || !text) {
     throw new Error(
       "Email recipient, subject, and text are required."
     );
   }
 
-  const html = `
+  const html = htmlOverride ?? `
     <div style="max-width:560px;margin:auto;padding:28px;font-family:Arial,sans-serif;color:#111;background:#faf9f6">
       <h1 style="text-align:center;letter-spacing:5px">
         GAZU
@@ -427,7 +428,7 @@ export async function sendEmail(to, subject, text) {
 
   // Google Apps Script
   if (provider === "apps_script") {
-    return sendWithAppsScript(to, subject, text);
+    return sendWithAppsScript(to, subject, text, html);
   }
 
   // Gmail API
