@@ -74,6 +74,25 @@ export default function OrderCard({
             : "Mock paid — no real money charged"}
       </p>
 
+
+      <p className="email-status" aria-live="polite">
+        <b>Confirmation email:</b>{" "}
+        {order.confirmationEmail?.status === "submitted"
+          ? "Submitted to email service"
+          : order.confirmationEmail?.status === "sending"
+            ? "Sending"
+            : order.confirmationEmail?.status === "failed"
+              ? "Could not be submitted"
+              : "Pending"}
+        {order.confirmationEmail?.submittedAt && (
+          <small>
+            {" "}· {new Date(order.confirmationEmail.submittedAt).toLocaleString("en-IN", {
+              timeZone: "Asia/Kolkata",
+            })} IST
+          </small>
+        )}
+      </p>
+
       <p>
         Deliver to: {order.shipping.name}, {order.shipping.address},{" "}
         {order.shipping.city} — {order.shipping.pin}. Phone:{" "}
