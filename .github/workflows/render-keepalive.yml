@@ -1,6 +1,9 @@
 name: Keep Render backend awake
 
 on:
+  # Also validate the Render service immediately after deploying main.
+  push:
+    branches: [main]
   # Render Free spins down after 15 minutes without inbound traffic.
   # Run away from the top of the hour to reduce GitHub schedule contention.
   schedule:
