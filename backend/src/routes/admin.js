@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import Order from '../models/Order.js';
-import {sendOrderStatusUpdate} from '../services/orderNotifications.js';
+import {sendOrderStatusUpdate,attachConfirmationEmailStatus} from '../services/orderNotifications.js';
 import InventoryEvent from '../models/InventoryEvent.js';
 import StoreEvent from '../models/StoreEvent.js';
 import {cacheStatus} from '../services/cache.js';
@@ -63,7 +63,11 @@ router.delete('/products/:id',inventory,validateId,async(req,res)=>{
  await invalidateProducts();res.status(204).end();
 });
 router.get('/inventory-history',inventory,async(req,res)=>res.json(await InventoryEvent.find().sort({createdAt:-1}).limit(100).populate('actor','name email')));
-router.get('/orders',fulfil,async(req,res)=>res.json(await Order.find().populate('user','name email').sort({createdAt:-1})));
+router.get('/orders',fulfil,async(req,res)=>{
+ const orders=await Order.find().populate('user','name email').sort({createdAt:-1});
+ await attachConfirmationEmailStatus(orders);
+ res.json(orders);
+});
 router.patch('/orders/:id/status',fulfil,validateId,validate(z.object({status:z.enum(['preparing','out_for_delivery','delivered'])}).strict()),async(req,res)=>{
  const previous={preparing:'placed',out_for_delivery:'preparing',delivered:'out_for_delivery'}[req.body.status];
  const changes={status:req.body.status};
