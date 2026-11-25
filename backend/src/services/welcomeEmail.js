@@ -40,15 +40,17 @@ export async function sendWelcomeEmail(user) {
   try {
     await sendEmail(
       claimed.email,
-      "GAZU - Welcome to GAZU Fashion Store!",
+      "Your GAZU account is ready",
       [
         `Hi ${claimed.name || "Customer"},`,
         "",
-        "Welcome to GAZU Fashion Store!",
-        "Your account is verified and ready to shop.",
-        "Discover our latest collections and enjoy your GAZU experience.",
+        "Your email address has been verified and your GAZU account is ready.",
         "",
-        "Thank you for joining us!",
+        "You can now sign in and manage your account or place an order:",
+        "https://gazufashionstore.vercel.app/",
+        "",
+        "If you did not create this account, please contact GAZU support.",
+        "",
         "GAZU Fashion Store",
       ].join("\n"),
       welcomeEmailHtml({ name: claimed.name }),

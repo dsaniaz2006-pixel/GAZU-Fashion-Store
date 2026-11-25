@@ -74,13 +74,13 @@ test("register sends six digits but returns no token; verify once then sign in",
   assert.match(mails[0].subject, /GAZU/);
   await login().expect(403);
   await verify(code()).expect(200);
-  assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 1);
+  assert.equal(mails.filter(m => m.subject === "Your GAZU account is ready").length, 1);
   assert.equal((await User.findOne({ email })).emailVerified, true);
   assert.equal(await EmailOtp.countDocuments(), 0);
   await verify(code()).expect(400);
   assert.ok((await login().expect(200)).body.token);
   assert.ok((await login().expect(200)).body.token);
-  assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 1);
+  assert.equal(mails.filter(m => m.subject === "Your GAZU account is ready").length, 1);
   const saved = await User.findOne({ email });
   assert.ok(saved.welcomeEmailAttemptedAt);
   assert.ok(saved.welcomeEmailSentAt);
@@ -236,7 +236,7 @@ test("welcome email is never retried on login after an unsuccessful send", async
   deliveryFails = false;
   await login().expect(200);
   await login().expect(200);
-  assert.equal(mails.filter(m => m.subject.includes("Welcome to GAZU")).length, 0);
+  assert.equal(mails.filter(m => m.subject === "Your GAZU account is ready").length, 0);
   await verify(otp).expect(400);
 });
 

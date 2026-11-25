@@ -67,10 +67,13 @@ export function otpEmailHtml(otp) {
 
 export function welcomeEmailHtml({ name } = {}) {
   return frame({
-    eyebrow: 'Welcome to GAZU', headline: 'Welcome to your new essentials.',
-    summary: `Hi ${name || 'Customer'}, your account is verified and ready to shop.`,
-    body: panel(`${smallLabel('You are all set')}<p style="margin:0;font:15px/1.7 Arial,sans-serif;color:#333333">Discover curated fashion, fresh arrivals, and contemporary essentials at GAZU.</p>`),
-    action: 'EXPLORE GAZU', actionHref: STORE_URL,
+    eyebrow: 'Account verified',
+    headline: 'Your GAZU account is ready.',
+    summary: `Hi ${name || 'Customer'}, your email address has been verified successfully.`,
+    body: panel(`${smallLabel('Account status')}<p style="margin:0;font:15px/1.7 Arial,sans-serif;color:#333333">Your GAZU customer account is active. You can now sign in, manage your account, and place orders.</p>`),
+    action: 'OPEN GAZU',
+    actionHref: STORE_URL,
+    preheader: 'Your GAZU email address is verified and your account is ready.',
   });
 }
 
