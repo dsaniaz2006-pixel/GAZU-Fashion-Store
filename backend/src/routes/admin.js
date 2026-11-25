@@ -65,8 +65,7 @@ router.delete('/products/:id',inventory,validateId,async(req,res)=>{
 router.get('/inventory-history',inventory,async(req,res)=>res.json(await InventoryEvent.find().sort({createdAt:-1}).limit(100).populate('actor','name email')));
 router.get('/orders',fulfil,async(req,res)=>{
  const orders=await Order.find().populate('user','name email').sort({createdAt:-1});
- await attachConfirmationEmailStatus(orders);
- res.json(orders);
+ res.json(await attachConfirmationEmailStatus(orders));
 });
 router.patch('/orders/:id/status',fulfil,validateId,validate(z.object({status:z.enum(['preparing','out_for_delivery','delivered'])}).strict()),async(req,res)=>{
  const previous={preparing:'placed',out_for_delivery:'preparing',delivered:'out_for_delivery'}[req.body.status];
