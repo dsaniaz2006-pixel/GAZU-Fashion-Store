@@ -7,6 +7,7 @@ import {
   razorpayVerificationSchema,
 } from "../middleware/validate.js";
 import { mockCheckout } from "../services/mockPayment.js";
+import { attachConfirmationEmailStatus } from "../services/orderNotifications.js";
 import {
   createRazorpayOrder,
   razorpayCredentials,
@@ -25,7 +26,7 @@ router.get("/config", (req, res) => {
 router.post("/mock/checkout", requireAuth, validate(checkoutSchema.extend({ outcome: z.enum(["success", "failure"]) })), async (req, res) => {
   if (process.env.ENABLE_MOCK_PAYMENTS !== "true" || process.env.NODE_ENV === "production") fail(403, "Mock payments are disabled. Use COD.");
   const result = await mockCheckout(req.user.id, req.body, req.requestId);
-  res.status(result.status).json(result.order);
+  res.status(result.status).json(await attachConfirmationEmailStatus(result.order));
 });
 router.post("/razorpay/order", requireAuth, validate(checkoutSchema), async (req, res) => {
   res.status(201).json(await createRazorpayOrder(req.user.id, req.body));
@@ -36,7 +37,7 @@ router.post(
   validate(razorpayVerificationSchema),
   async (req, res) => {
     const result = await verifyRazorpayPayment(req.user.id, req.body);
-    res.status(result.status).json(result.order);
+    res.status(result.status).json(await attachConfirmationEmailStatus(result.order));
   },
 );
 export default router;

@@ -48,6 +48,7 @@ before(async () => {
   mock.method(nodemailer, "createTransport", () => ({
     sendMail: async mail => {submittedMail.push(mail);if(mailFails)throw Error("Test SMTP unavailable");return {accepted:[mail.to]};},
   }));
+  process.env.EMAIL_PROVIDER = "smtp"; // Use the mocked Nodemailer transport; never call a live provider in tests.
   process.env.EMAIL_USER = "sender@example.test";
   process.env.EMAIL_PASS = "test-only";
   process.env.JWT_SECRET = "test-only-secret-with-more-than-32-characters";

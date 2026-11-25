@@ -261,3 +261,50 @@ export async function sendOrderStatusUpdate(order) {
     return false;
   }
 }
+
+
+// Attach a safe, customer-visible confirmation-email status to order records.
+// Return plain objects so the virtual response field is included in JSON without
+// changing or persisting the Order schema.
+export async function attachConfirmationEmailStatus(orders) {
+  const isArray = Array.isArray(orders);
+  const list = isArray ? orders : [orders];
+  const ids = list.filter(Boolean).map((order) => order._id).filter(Boolean);
+  if (!ids.length) return orders;
+
+  const notifications = await OrderNotification.find({
+    order: { $in: ids },
+    type: "order_confirmation",
+  }).select("order status sentAt updatedAt");
+
+  const byOrder = new Map(
+    notifications.map((notification) => [
+      String(notification.order),
+      {
+        status:
+          notification.status === "sent"
+            ? "submitted"
+            : notification.status === "sending"
+              ? "sending"
+              : notification.status === "failed"
+                ? "failed"
+                : "pending",
+        submittedAt: notification.sentAt || null,
+        updatedAt: notification.updatedAt || null,
+      },
+    ]),
+  );
+
+  const result = list.map((order) => {
+    if (!order) return order;
+    const plain = typeof order.toObject === "function" ? order.toObject({ virtuals: true }) : { ...order };
+    plain.confirmationEmail =
+      byOrder.get(String(order._id)) || {
+        status: "pending",
+        submittedAt: null,
+        updatedAt: null,
+      };
+    return plain;
+  });
+  return isArray ? result : result[0];
+}
