@@ -1,3 +1,5 @@
+> **Render Free keep-alive:** A scheduled GitHub Actions workflow pings the public GAZU health endpoint every five minutes, with retry checks for cold starts. See [the setup and reliability notes](docs/RENDER_KEEPALIVE.md). This is best-effort on Free compute; a paid Render plan is required for guaranteed no-spin-down behaviour.
+
 > **Wave 1–3 compatibility-first structural refactor:** See [the current folder architecture](docs/GAZU_REFACTOR_ARCHITECTURE.md) and [file-level changes](docs/GAZU_REFACTOR_CHANGELOG.md). API/state layers were modularized and Wave 3 routes split without changing published URLs or visual design. Run `npm run verify:refactor` and the full dependency-based tests on your Mac before deployment.
 
 > **Wave 1 AI workstream update (Phases 0–4):** See [WAVE1_IMPLEMENTATION_GUIDE.md](docs/archive/wave1/WAVE1_IMPLEMENTATION_GUIDE.md) and [WAVE1_TEST_REPORT.md](docs/archive/wave1/WAVE1_TEST_REPORT.md). No live API keys or MongoDB data are bundled.
@@ -14,6 +16,7 @@ The latest update adds Google Identity Services, mandatory GAZU OTP for first-ti
 - [API contracts](docs/API.md)
 - [Database models and staging safety](docs/DATABASE.md)
 - [Environment configuration](docs/ENVIRONMENT.md)
+- [Render Free keep-alive and cold-start guide](docs/RENDER_KEEPALIVE.md)
 - [Test commands and procedures](docs/TESTING.md)
 - [Wave 1–3 AI feature map](docs/AI_FEATURES.md)
 - [Project changelog](CHANGELOG.md)
