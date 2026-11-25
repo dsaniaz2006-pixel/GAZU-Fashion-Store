@@ -16,7 +16,6 @@ The latest update adds Google Identity Services, mandatory GAZU OTP for first-ti
 - [API contracts](docs/API.md)
 - [Database models and staging safety](docs/DATABASE.md)
 - [Environment configuration](docs/ENVIRONMENT.md)
-- [Render Free keep-alive and cold-start guide](docs/RENDER_KEEPALIVE.md)
 - [Test commands and procedures](docs/TESTING.md)
 - [Wave 1–3 AI feature map](docs/AI_FEATURES.md)
 - [Project changelog](CHANGELOG.md)
