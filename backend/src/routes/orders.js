@@ -33,7 +33,7 @@ router.post(
     }
 
     // Return the successful order even if email fails.
-    return res.status(201).json(order);
+    return res.status(201).json(await attachConfirmationEmailStatus(order));
   }
 );
 
