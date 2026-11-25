@@ -24,6 +24,9 @@ test('welcome HTML escapes untrusted names and links to the official GAZU site',
   assert.doesNotMatch(html, /<script>/);
   assert.match(html, /&lt;script&gt;/);
   assert.match(html, /href="https:\/\/gazufashionstore\.vercel\.app"/);
+  assert.match(html, /email address has been verified successfully/);
+  assert.match(html, /Your GAZU customer account is active/);
+  assert.doesNotMatch(html, /fresh arrivals|curated fashion|limited offer|buy now/i);
 });
 
 test('confirmation includes actual order number, items, totals and escaped address', () => {
