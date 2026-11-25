@@ -40,15 +40,13 @@ router.post(
 
 router.get("/", async (req, res) => {
   const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
-  await attachConfirmationEmailStatus(orders);
-  res.json(orders);
+  res.json(await attachConfirmationEmailStatus(orders));
 });
 
 router.get("/:id", validateId, async (req, res) => {
   const order = await Order.findOne({ _id: req.params.id, user: req.user.id });
   if (!order) fail(404, "Order not found.");
-  await attachConfirmationEmailStatus(order);
-  res.json(order);
+  res.json(await attachConfirmationEmailStatus(order));
 });
 
 export default router;
