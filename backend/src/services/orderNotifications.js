@@ -297,7 +297,7 @@ export async function attachConfirmationEmailStatus(orders) {
 
   const result = list.map((order) => {
     if (!order) return order;
-    const plain = typeof order.toObject === "function" ? order.toObject() : { ...order };
+    const plain = typeof order.toObject === "function" ? order.toObject({ virtuals: true }) : { ...order };
     plain.confirmationEmail =
       byOrder.get(String(order._id)) || {
         status: "pending",
