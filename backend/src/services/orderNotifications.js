@@ -261,3 +261,48 @@ export async function sendOrderStatusUpdate(order) {
     return false;
   }
 }
+
+
+// Attach a safe, customer-visible confirmation-email status to order records.
+// "sent" is retained in storage for backwards compatibility but presented as
+// "submitted", because the provider acceptance response is not inbox delivery.
+export async function attachConfirmationEmailStatus(orders) {
+  const list = Array.isArray(orders) ? orders : [orders];
+  const ids = list.filter(Boolean).map((order) => order._id).filter(Boolean);
+  if (!ids.length) return orders;
+
+  const notifications = await OrderNotification.find({
+    order: { $in: ids },
+    type: "order_confirmation",
+  }).select("order status sentAt updatedAt");
+
+  const byOrder = new Map(
+    notifications.map((notification) => [
+      String(notification.order),
+      {
+        status:
+          notification.status === "sent"
+            ? "submitted"
+            : notification.status === "sending"
+              ? "sending"
+              : notification.status === "failed"
+                ? "failed"
+                : "pending",
+        submittedAt: notification.sentAt || null,
+        updatedAt: notification.updatedAt || null,
+      },
+    ]),
+  );
+
+  for (const order of list) {
+    if (order) {
+      order.confirmationEmail =
+        byOrder.get(String(order._id)) || {
+          status: "pending",
+          submittedAt: null,
+          updatedAt: null,
+        };
+    }
+  }
+  return orders;
+}
