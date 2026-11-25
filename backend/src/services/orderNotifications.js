@@ -264,10 +264,11 @@ export async function sendOrderStatusUpdate(order) {
 
 
 // Attach a safe, customer-visible confirmation-email status to order records.
-// "sent" is retained in storage for backwards compatibility but presented as
-// "submitted", because the provider acceptance response is not inbox delivery.
+// Return plain objects so the virtual response field is included in JSON without
+// changing or persisting the Order schema.
 export async function attachConfirmationEmailStatus(orders) {
-  const list = Array.isArray(orders) ? orders : [orders];
+  const isArray = Array.isArray(orders);
+  const list = isArray ? orders : [orders];
   const ids = list.filter(Boolean).map((order) => order._id).filter(Boolean);
   if (!ids.length) return orders;
 
@@ -294,15 +295,16 @@ export async function attachConfirmationEmailStatus(orders) {
     ]),
   );
 
-  for (const order of list) {
-    if (order) {
-      order.confirmationEmail =
-        byOrder.get(String(order._id)) || {
-          status: "pending",
-          submittedAt: null,
-          updatedAt: null,
-        };
-    }
-  }
-  return orders;
+  const result = list.map((order) => {
+    if (!order) return order;
+    const plain = typeof order.toObject === "function" ? order.toObject() : { ...order };
+    plain.confirmationEmail =
+      byOrder.get(String(order._id)) || {
+        status: "pending",
+        submittedAt: null,
+        updatedAt: null,
+      };
+    return plain;
+  });
+  return isArray ? result : result[0];
 }
