@@ -198,6 +198,18 @@ export default function Checkout({
               : "Mock payment — no money charged"}
         </p>
 
+        <section className="form-note" role="status" aria-live="polite">
+          <h2>CHECK YOUR MAILBOX</h2>
+          <p>Your order confirmation email for {user.email || "your registered email address"}:</p>
+          {order.confirmationEmail?.status === "submitted" ? (
+            <p><strong>Submitted to email service.</strong> Please check your Inbox, Spam and Promotions folders. Email submission does not guarantee Inbox delivery.</p>
+          ) : order.confirmationEmail?.status === "failed" ? (
+            <p>Email submission failed, but your order is placed successfully. Please check My Orders for the latest status.</p>
+          ) : (
+            <p>Your email status is {order.confirmationEmail?.status || "pending"}. Please check My Orders shortly.</p>
+          )}
+        </section>
+
         <button className="btn dark" onClick={() => go("track")}>
           VIEW MY ORDERS
         </button>
